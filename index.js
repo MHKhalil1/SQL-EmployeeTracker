@@ -110,3 +110,49 @@ function viewEmployeesByDepartment(){
     getDept(deptChoices);
   });
 }
+
+// This function is for picking the department for employees.
+function getDept(deptChoices){
+    inquirer
+        .prompt([
+            {
+                type: 'list',
+                name: 'department',
+                message: 'Which department would you like',
+                choices: deptChoices
+            }
+        ]).then((res)=>{ 
+        let query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name
+                    FROM employee
+                    JOIN role
+                        ON employee.role_id = role.id
+                    JOIN department
+                        ON department.id = role.department_id
+                    WHERE department.id = ?`
+  
+        connection.query(query, res.department,(err, res)=>{
+        if(err)throw err;
+          firstPrompt();
+          console.table(res);
+        });
+    })
+}
+
+// This function is for adding employees.
+function addEmployee() {
+    let query = 
+    `SELECT role.id, role.title, role.salary
+    FROM role`
+
+ connection.query(query,(err, res)=>{
+    if(err)throw err;
+    const role = res.map(({ id, title, salary }) => ({
+      value: id, 
+      title: `${title}`, 
+      salary: `${salary}`
+    }));
+
+    console.table(res);
+    employeeRoles(role);
+  });
+}

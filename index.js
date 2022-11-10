@@ -206,3 +206,44 @@ function removeEmployee() {
       getDelete(employee);
     });
   }
+
+  // Deletes Employee.
+  function getDelete(employee){  
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employee",
+          message: "Employee Being Deleted: ",
+          choices: employee
+        }
+      ]).then((res)=>{
+        let query = `DELETE FROM employee WHERE ?`;
+        connection.query(query, { id: res.employee },(err, res)=>{
+          if(err) throw err;
+          firstPrompt();
+        });
+      });
+  }
+
+  // This function is for updating employee role.
+function updateEmployeeRole(){
+    let query = `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name,  role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+                FROM employee
+                JOIN role
+                    ON employee.role_id = role.id
+                JOIN department
+                    ON department.id = role.department_id
+                JOIN employee manager
+                    ON manager.id = employee.manager_id`
+  
+    connection.query(query,(err, res)=>{
+      if(err)throw err;
+      const employee = res.map(({ id, first_name, last_name }) => ({
+        value: id,
+         name: `${first_name} ${last_name}`      
+      }));
+      console.table(res);
+      updateRole(employee);
+    });
+}

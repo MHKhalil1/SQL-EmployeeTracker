@@ -247,3 +247,119 @@ function updateEmployeeRole(){
       updateRole(employee);
     });
 }
+
+function updateRole(employee){
+    let query = 
+    `SELECT role.id, role.title, role.salary
+    FROM role`
+  
+    connection.query(query,(err, res)=>{
+      if(err)throw err;
+      let roleChoices = res.map(({ id, title, salary }) => ({
+        value: id, 
+        title: `${title}`, 
+        salary: `${salary}`      
+      }));
+      console.table(res);
+      getUpdatedRole(employee, roleChoices);
+    });
+  }
+    
+  function getUpdatedRole(employee, roleChoices) {
+    inquirer
+      .prompt([
+        {
+          type: "list",
+          name: "employee",
+          message: `Employee being Updated: `,
+          choices: employee
+        },
+        {
+          type: "list",
+          name: "role",
+          message: "Select New Role: ",
+          choices: roleChoices
+        },
+  
+      ]).then((res)=>{
+        let query = `UPDATE employee SET role_id = ? WHERE id = ?`
+        connections.query(query,[ res.role, res.employee],(err, res)=>{
+            if(err)throw err;
+            firstPrompt();
+          });
+      });
+  }
+  
+  // This function is for adding roles
+  function addRole(){
+      var query = 
+      `SELECT department.id, department.name, role.salary
+      FROM employee
+      JOIN role
+        ON employee.role_id = role.id
+      JOIN department
+        ON department.id = role.department_id
+      GROUP BY department.id, department.name`
+    
+      connection.query(query,(err, res)=>{
+        if(err)throw err;
+        const department = res.map(({ id, name }) => ({
+          value: id,
+          name: `${id} ${name}`
+        }));
+        console.table(res);
+        addToRole(department);
+      });
+  }
+    
+  function addToRole(department){
+      inquirer
+        .prompt([
+          {
+            type: "input",
+            name: "title",
+            message: "Role title: "
+          },
+          {
+            type: "input",
+            name: "salary",
+            message: "Role Salary: "
+          },
+          {
+            type: "list",
+            name: "department",
+            message: "Department: ",
+            choices: department
+          },
+        ]).then((res)=>{
+          let query = `INSERT INTO role SET ?`;
+    
+          connection.query(query, {
+              title: res.title,
+              salary: res.salary,
+              department_id: res.department
+          },(err, res)=>{
+              if(err) throw err;
+              firstPrompt();
+          });
+      });
+  }
+  
+  // This function is for adding departments
+  function addDepartment(){
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          name: "name",
+          message: "Department Name: "
+        }
+      ]).then((res)=>{
+      let query = `INSERT INTO department SET ?`;
+      connection.query(query, {name: res.name},(err, res)=>{
+        if(err) throw err;
+        
+        firstPrompt();
+      });
+    });
+  }

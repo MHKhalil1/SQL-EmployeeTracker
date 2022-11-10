@@ -283,7 +283,7 @@ function updateRole(employee){
   
       ]).then((res)=>{
         let query = `UPDATE employee SET role_id = ? WHERE id = ?`
-        connections.query(query,[ res.role, res.employee],(err, res)=>{
+        connection.query(query,[ res.role, res.employee],(err, res)=>{
             if(err)throw err;
             firstPrompt();
           });

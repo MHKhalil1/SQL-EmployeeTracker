@@ -12,7 +12,7 @@ This assignment was assigned by the Case-Western Coding Bootcamp. The goal is to
 ## License
 ISC
 ## Recording
-  [SQL-EmployeeTracker Video Walkthrough]()
+[SQL-EmployeeTracker Video Walkthrough](https://drive.google.com/file/d/1iwADDFVAtdvxLHPGTgT8qfebhekN-Olc/view)
 ## Repository
 [SQL-EmployeeTracker Repository URL](https://github.com/MHKhalil1/SQL-EmployeeTracker.git)
 ## Questions

@@ -156,3 +156,53 @@ function addEmployee() {
     employeeRoles(role);
   });
 }
+
+// This function is for updating roles.
+function employeeRoles(role) {
+    inquirer
+      .prompt([
+      {
+        type: "input",
+        name: "firstName",
+        message: "Employee First Name: "
+      },
+      {
+        type: "input",
+        name: "lastName",
+        message: "Employee Last Name: "
+      },
+      {
+        type: "list",
+        name: "roleId",
+        message: "Employee Role: ",
+        choices: role
+      }
+    ]).then((res)=>{
+        let query = `INSERT INTO employee SET ?`
+        connection.query(query,{
+          first_name: res.firstName,
+          last_name: res.lastName,
+          role_id: res.roleId
+        },(err, res)=>{
+          if(err) throw err;
+          firstPrompt();
+      });
+    });
+  }
+
+  // This function is for removing employees.
+function removeEmployee() {
+    let query =
+    `SELECT employee.id, employee.first_name, employee.last_name
+    FROM employee`
+  
+    connection.query(query,(err, res)=>{
+      if(err)throw err;
+      const employee = res.map(({ id, first_name, last_name }) => ({
+        value: id,
+        name: `${id} ${first_name} ${last_name}`
+      }));
+      console.table(res);
+      getDelete(employee);
+    });
+  }

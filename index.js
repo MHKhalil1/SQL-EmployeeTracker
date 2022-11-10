@@ -70,3 +70,43 @@ connection.connect(function (err) {
     if(err)throw err;
     });
   }
+
+// This function is for viewing employees.
+function viewEmployees() {
+    let query = 
+    `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department, role.salary, CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+    FROM employee
+    LEFT JOIN role
+        ON employee.role_id = role.id
+    LEFT JOIN department
+        ON department.id = role.department_id
+    LEFT JOIN employee manager
+        ON manager.id = employee.manager_id`
+  
+    connection.query(query, (err, res)=>{
+      if (err) throw err;
+      console.table(res);
+      firstPrompt();
+    });
+}
+
+// This function is for viewing employees department.
+function viewEmployeesByDepartment(){
+    let query =
+    `SELECT department.id, department.name, role.salary
+    FROM employee
+    LEFT JOIN role 
+        ON employee.role_id = role.id
+    LEFT JOIN department
+        ON department.id = role.department_id
+    GROUP BY department.id, department.name, role.salary`;
+  
+  connection.query(query,(err, res)=>{
+      if (err) throw err;
+      const deptChoices = res.map((choices) => ({
+          value: choices.id, name: choices.name
+      }));
+    console.table(res);
+    getDept(deptChoices);
+  });
+}
